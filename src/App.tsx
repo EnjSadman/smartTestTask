@@ -14,6 +14,7 @@ import SwapVertIcon from '@mui/icons-material/SwapVert';
 import { changeDirection, changeField } from './lib/SortSlice/SortSlice';
 import { orderArray } from './components/OrderArray/OrderArray';
 import { objectStringifier } from './components/ObjectStringifier/ObjectStringifier';
+import { initateTableKeys } from './lib/TableKeysSlice/TableKeysSlice';
 
 function App() {
   const dispatch = useDispatch();
@@ -25,12 +26,14 @@ function App() {
 
   const sortStorage = useSelector((state : RootState) => state.SortReducer);
 
-  const usedFields : (keyof User)[] = ["name", "username", "email", "phone"];
+  const tableFields = useSelector((state : RootState) => state.TableKeysReducer);
 
-  const nameFilter = filtersStorage.nameFilter;
-  const usernameFilter = filtersStorage.usernameFilter;
-  const phoneFilter = filtersStorage.phoneFilter;
-  const emailFilter = filtersStorage.emailFilter;
+  const usedFields = tableFields.tableKeys;
+
+  const nameFilter = "";
+  const usernameFilter = "";
+  const phoneFilter = "";
+  const emailFilter = "";
 
   const sortField = sortStorage.sortByField;
   const sortDirection = sortStorage.sortDirection;
@@ -79,8 +82,17 @@ function App() {
   }
 
   useEffect(() => {
+    const tableKeys : (keyof User)[] = ["name", "username", "email", "phone"];
+    const tempArr : string[] = Array(tableKeys.length).fill("");
+
     fetchDispatchData();
+    dispatch(initateTableKeys(tableKeys));
+    dispatch(changeFilter(tempArr))
   }, []);
+
+  useEffect(() => {
+    console.log(filtersStorage.filterValues)
+  }, [filtersStorage.filterValues])
 
   return (
     <div className="App">
@@ -89,128 +101,52 @@ function App() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>
-                <TextField
-                  label="Name filter"
-                  value={nameFilter}
-                  onChange={(event) => {
-                    dispatch(changeFilter({type: SortTypes.name, payload: event.target.value}));
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  label="Username filter"
-                  value={usernameFilter}
-                  onChange={(event) => {
-                    dispatch(changeFilter({type: SortTypes.username, payload: event.target.value}));
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  label="Email filter"
-                  value={emailFilter}
-                  onChange={(event) => {
-                    dispatch(changeFilter({type: SortTypes.email, payload: event.target.value}));
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  label="Phone filter"
-                  value={phoneFilter}
-                  onChange={(event) => {
-                    dispatch(changeFilter({type: SortTypes.phone, payload: event.target.value}));
-                  }}
-                />
-              </TableCell>    
+              {
+               usedFields.map((el, index)=> {
+                 return (
+                   <TableCell>
+                     <TextField
+                       label={el}
+                       onChange={(event) => {
+                         const arrCopy = [...filtersStorage.filterValues];
+                         arrCopy[index] = event.target.value;
+                         dispatch(changeFilter(arrCopy))
+                       }}
+                     />
+                   </TableCell>
+                 )
+               })
+              }
             </TableRow>
             <TableRow>
-              <TableCell
-                onClick={() => {
-                  if (sortField !== SortTypes.name) {
-                    dispatch(changeField(SortTypes.name));
-                    dispatch(changeDirection(AscDesc.ascending));
-                  } else {
-                    if (sortDirection === AscDesc.ascending) {
-                      dispatch(changeDirection(AscDesc.descending))
-                    } else {
-                      dispatch(changeDirection(AscDesc.ascending))
-                    }
-                  }
-                }}
-              >
-                <div className='thead__item--wrapper'>
-                  Name
-                  {(sortDirection === AscDesc.ascending) && (sortField === SortTypes.name) && iconMap.upArrow}
-                  {(sortDirection === AscDesc.descending) && (sortField === SortTypes.name) && iconMap.downArrow}
-                  {(sortField !== SortTypes.name) && iconMap.swapVert}
-                </div>
-              </TableCell>
-              <TableCell
-                onClick={() => {
-                  if (sortField !== SortTypes.username) {
-                    dispatch(changeField(SortTypes.username));
-                    dispatch(changeDirection(AscDesc.ascending));
-                  } else {
-                    if (sortDirection === AscDesc.ascending) {
-                      dispatch(changeDirection(AscDesc.descending))
-                    } else {
-                      dispatch(changeDirection(AscDesc.ascending))
-                    }
-                  }
-                }}
-              >
-                <div className='thead__item--wrapper'>
-                  Username
-                  {(sortDirection === AscDesc.ascending) && (sortField === SortTypes.username) && iconMap.upArrow}
-                  {(sortDirection === AscDesc.descending) && (sortField === SortTypes.username) && iconMap.downArrow}
-                  {(sortField !== SortTypes.username) && iconMap.swapVert}
-                </div>
-              </TableCell>
-              <TableCell
-                onClick={() => {
-                  if (sortField !== SortTypes.email) {
-                    dispatch(changeField(SortTypes.email));
-                    dispatch(changeDirection(AscDesc.ascending));
-                  } else {
-                    if (sortDirection === AscDesc.ascending) {
-                      dispatch(changeDirection(AscDesc.descending))
-                    } else {
-                      dispatch(changeDirection(AscDesc.ascending))
-                    }
-                  }
-                }}
-              >
-                <div className='thead__item--wrapper'>
-                  E-mail
-                  {(sortDirection === AscDesc.ascending) && (sortField === SortTypes.email) && iconMap.upArrow}
-                  {(sortDirection === AscDesc.descending) && (sortField === SortTypes.email) && iconMap.downArrow}
-                  {(sortField !== SortTypes.email) && iconMap.swapVert}
-                </div>
-              </TableCell>
-              <TableCell
-                onClick={() => {
-                  if (sortField !== SortTypes.phone) {
-                    dispatch(changeField(SortTypes.phone));
-                    dispatch(changeDirection(AscDesc.ascending));
-                  } else {
-                    if (sortDirection === AscDesc.ascending) {
-                      dispatch(changeDirection(AscDesc.descending))
-                    } else {
-                      dispatch(changeDirection(AscDesc.ascending))
-                    }
-                  }
-                }}
-              >
-                <div className='thead__item--wrapper'>
-                  Phone
-                  {(sortDirection === AscDesc.ascending) && (sortField === SortTypes.phone) && iconMap.upArrow}
-                  {(sortDirection === AscDesc.descending) && (sortField === SortTypes.phone) && iconMap.downArrow}
-                  {(sortField !== SortTypes.phone) && iconMap.swapVert}
-                </div>
-              </TableCell>
+              {
+                usedFields.map((el, index) => {
+                  return(
+                    <TableCell>
+                      <div
+                        className='thead__item--wrapper'
+                        onClick={() => {
+                          if (sortField !== el) {
+                            dispatch(changeField(el))
+                            dispatch(changeDirection(AscDesc.ascending))
+                          } else {
+                            if (sortDirection !== AscDesc.ascending) {
+                              dispatch(changeDirection(AscDesc.descending))
+                            } else {
+                              dispatch(changeDirection(AscDesc.ascending))
+                            }
+                          }
+                        }}
+                      >
+                        {el}
+                        {(sortField === el) && (sortDirection === AscDesc.ascending) && iconMap.upArrow}
+                        {(sortField === el) && (sortDirection === AscDesc.descending) && iconMap.downArrow}
+                        {(sortField !== el) && iconMap.swapVert}
+                      </div>
+                    </TableCell>
+                  )
+                })
+              }              
             </TableRow>
           </TableHead>
           <TableBody>    
