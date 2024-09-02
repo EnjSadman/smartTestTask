@@ -31,26 +31,22 @@ function App() {
     dispatch(initializeUsersList(result))
   }
 
-  function orderArray (array : User[], parameter: string, order : AscDesc) : User[] {
-    if (order === AscDesc.ascending) {
-      [...array].sort((a, b) => {
-        let aParameter = a[parameter as keyof User] as string;
-        let bParameter = b[parameter as keyof User] as string;
+  function orderArray (array : User[], parameter: keyof User, order : AscDesc) : User[] {
+    const copyArray = [...array];
 
-        return aParameter.localeCompare(bParameter);
+    copyArray.sort((a, b) => {
+      const aParameter = a[parameter];
+      const bParameter = b[parameter];
+
+      if (typeof aParameter === "string" && typeof bParameter === "string") {
+        return (order === AscDesc.ascending)
+        ? aParameter.localeCompare(bParameter)
+        : bParameter.localeCompare(aParameter)
       }
-      )
-    } else {
-      [...array].sort((a, b) => {
-        let aParameter = a[parameter as keyof User] as string;
-        let bParameter = b[parameter as keyof User] as string;
+      return 0;
+    })
 
-        return aParameter.localeCompare(bParameter) * -1;
-      }
-      )
-    }
-
-    return array;
+    return copyArray;
   }
 
   const orderedArray = useMemo(() => {
@@ -60,14 +56,6 @@ function App() {
   useEffect(() => {
     fetchDispatchData();
   }, []);
-
-  useEffect(() => {
-
-  }, [usersArray]);
-
-  useEffect(() => {
-
-  })
 
   return (
     <div className="App">
