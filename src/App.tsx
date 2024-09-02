@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './lib/store';
@@ -6,11 +6,12 @@ import DataFetcher from './components/DataFetcher/DataFetcher';
 import { initializeUsersList } from './lib/UsersSlice/UsersSlice';
 import { Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
 import { AscDesc, SortTypes } from './utils/enums';
-import { changeDirection, changeField, changeFilter } from './lib/FilterSlice/FilterSlice';
+import { changeFilter } from './lib/FilterSlice/FilterSlice';
 import { User } from './utils/types';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import { changeDirection, changeField } from './lib/SortSlice/SortSlice';
 
 function App() {
   const dispatch = useDispatch();
@@ -20,13 +21,17 @@ function App() {
 
   const filtersStorage = useSelector((state : RootState) => state.FilterReducer);
 
+  const sortStorage = useSelector((state : RootState) => state.SortReducer);
+
+  const usedFields : (keyof User)[] = ["name", "username", "email", "phone"];
+
   const nameFilter = filtersStorage.nameFilter;
   const usernameFilter = filtersStorage.usernameFilter;
   const phoneFilter = filtersStorage.phoneFilter;
   const emailFilter = filtersStorage.emailFilter;
 
-  const sortField = filtersStorage.sortByField;
-  const sortDirection = filtersStorage.sortDirection;
+  const sortField = sortStorage.sortByField;
+  const sortDirection = sortStorage.sortDirection;
 
   const iconMap = {
     upArrow: <ArrowUpwardIcon fontSize='inherit' />,
@@ -60,6 +65,45 @@ function App() {
     })
 
     return copyArray;
+  };
+
+  function objectStringifier(obj: { [key: string]: any }): string {
+    let result = '';
+    for (let key in obj) {
+        if (typeof obj[key] === "object" && obj[key] !== null) {
+            result += `${key}: ${objectStringifier(obj[key])}\n`;
+        } else if (typeof obj[key] !== "undefined") {
+            result += `${key}: ${obj[key]}\n`;
+        }
+    }
+    return result;
+  }
+
+  function singleCellContent (user : User, item : keyof User) {
+    const value = user[item]
+
+    if (typeof value === "string" || typeof value === "number") {
+      return (
+        <TableCell>
+          {value}
+        </TableCell>   
+      )
+    } else if (typeof value === "object" && value !== null){
+      const result = objectStringifier(value).split("\n")
+
+      return(
+        <TableCell>
+          {
+            result.map((el, index) => (
+              <div key={index}>
+                {el}
+              </div>
+            )
+            )
+          }
+        </TableCell>
+      )
+    }
   }
 
   useEffect(() => {
@@ -207,18 +251,9 @@ function App() {
             )
             .map(el => (
               <TableRow key={el.id}>
-                <TableCell>
-                  {el.name}
-                </TableCell>
-                <TableCell>
-                  {el.username}
-                </TableCell>
-                <TableCell>
-                  {el.email}
-                </TableCell>
-                <TableCell>
-                  {el.phone}
-                </TableCell>
+                {
+                  usedFields.map((singleUsedField : keyof User) => singleCellContent(el, singleUsedField))
+                }
               </TableRow>
             ))         
             }

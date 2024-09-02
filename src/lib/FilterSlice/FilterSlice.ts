@@ -11,8 +11,6 @@ interface InitialState {
   usernameFilter: string,
   emailFilter: string,
   phoneFilter: string,
-  sortByField: SortTypes,
-  sortDirection: AscDesc,
 }
 
 const initialState : InitialState = {
@@ -20,8 +18,6 @@ const initialState : InitialState = {
   usernameFilter: "",
   emailFilter: "",
   phoneFilter: "",
-  sortByField: SortTypes.name,
-  sortDirection: AscDesc.ascending,
 }
 
 const FilterSlice = createSlice({
@@ -50,16 +46,10 @@ const FilterSlice = createSlice({
           return state;
         }
       }
-    },
-    changeDirection: (state, action : PayloadAction<AscDesc>) => {
-      state.sortDirection = action.payload;
-    },
-    changeField: (state, action : PayloadAction<SortTypes>) => {
-      state.sortByField = action.payload;
     }
   }
 })
 
 export default FilterSlice.reducer;
 
-export const {changeFilter, changeDirection, changeField} = FilterSlice.actions;
+export const {changeFilter} = FilterSlice.actions;
