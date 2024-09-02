@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { SortTypes } from "../../utils/enums";
+import { AscDesc, SortTypes } from "../../utils/enums";
 
 interface changeFilterAction {
   type: SortTypes,
@@ -11,14 +11,17 @@ interface InitialState {
   usernameFilter: string,
   emailFilter: string,
   phoneFilter: string,
+  sortByField: SortTypes,
+  sortDirection: AscDesc,
 }
 
 const initialState : InitialState = {
   nameFilter: "",
   usernameFilter: "",
   emailFilter: "",
-  phoneFilter: ""
-
+  phoneFilter: "",
+  sortByField: SortTypes.name,
+  sortDirection: AscDesc.ascending,
 }
 
 const FilterSlice = createSlice({
@@ -48,12 +51,15 @@ const FilterSlice = createSlice({
         }
       }
     },
-    changeOrder: (state, action) => {
-
+    changeDirection: (state, action : PayloadAction<AscDesc>) => {
+      state.sortDirection = action.payload;
+    },
+    changeField: (state, action : PayloadAction<SortTypes>) => {
+      state.sortByField = action.payload;
     }
   }
 })
 
 export default FilterSlice.reducer;
 
-export const {changeFilter, changeOrder} = FilterSlice.actions;
+export const {changeFilter, changeDirection, changeField} = FilterSlice.actions;
