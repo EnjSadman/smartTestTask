@@ -12,6 +12,8 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import { changeDirection, changeField } from './lib/SortSlice/SortSlice';
+import { orderArray } from './components/OrderArray/OrderArray';
+import { objectStringifier } from './components/ObjectStringifier/ObjectStringifier';
 
 function App() {
   const dispatch = useDispatch();
@@ -47,36 +49,6 @@ function App() {
     let result = await DataFetcher();
 
     dispatch(initializeUsersList(result))
-  }
-
-  function orderArray (array : User[], parameter: keyof User, order : AscDesc) : User[] {
-    const copyArray = [...array];
-
-    copyArray.sort((a, b) => {
-      const aParameter = a[parameter];
-      const bParameter = b[parameter];
-
-      if (typeof aParameter === "string" && typeof bParameter === "string") {
-        return (order === AscDesc.ascending)
-        ? aParameter.localeCompare(bParameter)
-        : bParameter.localeCompare(aParameter)
-      }
-      return 0;
-    })
-
-    return copyArray;
-  };
-
-  function objectStringifier(obj: { [key: string]: any }): string {
-    let result = '';
-    for (let key in obj) {
-        if (typeof obj[key] === "object" && obj[key] !== null) {
-            result += `${key}: ${objectStringifier(obj[key])}\n`;
-        } else if (typeof obj[key] !== "undefined") {
-            result += `${key}: ${obj[key]}\n`;
-        }
-    }
-    return result;
   }
 
   function singleCellContent (user : User, item : keyof User) {
