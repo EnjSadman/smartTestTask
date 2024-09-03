@@ -1,20 +1,20 @@
 import { useEffect, useMemo } from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './lib/store';
-import DataFetcher from './components/DataFetcher/DataFetcher';
-import { initializeUsersList } from './lib/UsersSlice/UsersSlice';
+import { RootState } from './store/store';
+import DataFetcher from './lib/DataFetcher/DataFetcher';
+import { initializeUsersList } from './store/UsersSlice/UsersSlice';
 import { Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@mui/material';
-import { AscDesc, SortTypes } from './utils/enums';
-import { changeFilter } from './lib/FilterSlice/FilterSlice';
+import { AscDesc } from './utils/enums';
+import { changeFilter } from './store/FilterSlice/FilterSlice';
 import { User } from './utils/types';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
-import { changeDirection, changeField } from './lib/SortSlice/SortSlice';
-import { orderArray } from './components/OrderArray/OrderArray';
-import { objectStringifier } from './components/ObjectStringifier/ObjectStringifier';
-import { initateTableKeys } from './lib/TableKeysSlice/TableKeysSlice';
+import { changeDirection, changeField } from './store/SortSlice/SortSlice';
+import { orderArray } from './lib/OrderArray/OrderArray';
+import { objectStringifier } from './lib/ObjectStringifier/ObjectStringifier';
+import { initateTableKeys } from './store/TableKeysSlice/TableKeysSlice';
 
 function App() {
   const dispatch = useDispatch();
@@ -29,11 +29,6 @@ function App() {
   const tableFields = useSelector((state : RootState) => state.TableKeysReducer);
 
   const usedFields = tableFields.tableKeys;
-
-  const nameFilter = "";
-  const usernameFilter = "";
-  const phoneFilter = "";
-  const emailFilter = "";
 
   const sortField = sortStorage.sortByField;
   const sortDirection = sortStorage.sortDirection;
@@ -81,6 +76,15 @@ function App() {
     }
   }
 
+  function filtratingFunction(element : User) {
+    for (let i = 0; i < usedFields.length; i++) {
+      if (!element[usedFields[i]].toString().includes(filtersStorage.filterValues[i])) {
+        return 
+      }
+    }
+    return element;
+  }
+
   useEffect(() => {
     const tableKeys : (keyof User)[] = ["name", "username", "email", "phone"];
     const tempArr : string[] = Array(tableKeys.length).fill("");
@@ -89,10 +93,6 @@ function App() {
     dispatch(initateTableKeys(tableKeys));
     dispatch(changeFilter(tempArr))
   }, []);
-
-  useEffect(() => {
-    console.log(filtersStorage.filterValues)
-  }, [filtersStorage.filterValues])
 
   return (
     <div className="App">
@@ -130,7 +130,7 @@ function App() {
                             dispatch(changeField(el))
                             dispatch(changeDirection(AscDesc.ascending))
                           } else {
-                            if (sortDirection !== AscDesc.ascending) {
+                            if (sortDirection === AscDesc.ascending) {
                               dispatch(changeDirection(AscDesc.descending))
                             } else {
                               dispatch(changeDirection(AscDesc.ascending))
@@ -149,14 +149,10 @@ function App() {
               }              
             </TableRow>
           </TableHead>
-          <TableBody>    
+          <TableBody>
+            {usersArray.length === 0 && <TableCell>No users here. Sorry!</TableCell>}    
             { orderedArray
-            .filter(el => 
-              el.name.toLowerCase().includes(nameFilter.toLowerCase().trim())
-              && el.username.toLowerCase().includes(usernameFilter.toLowerCase().trim())
-              && el.phone.toLowerCase().includes(phoneFilter.toLowerCase().trim())
-              && el.email.toLowerCase().includes(emailFilter.toLowerCase().trim())
-            )
+            .filter(el=> filtratingFunction(el))
             .map(el => (
               <TableRow key={el.id}>
                 {
