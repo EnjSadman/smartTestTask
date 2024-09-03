@@ -1,11 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
 import UserReducer from './UsersSlice/UsersSlice';
 import FilterReducer from './FilterSlice/FilterSlice';
+import SortReducer from './SortSlice/SortSlice';
+import TableKeysReducer from './TableKeysSlice/TableKeysSlice';
 
 export const store = configureStore({
   reducer: {
     UserReducer,
     FilterReducer,
+    SortReducer,
+    TableKeysReducer,
   },
 })
 
