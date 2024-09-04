@@ -10,16 +10,21 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <App />
+    },
+    {
+      path: "/:query",
+      element: <App />
+    }
+  ],
   {
-    path: "/",
-    element: <App />
-  },
-  {
-    path: "/:query",
-    element: <App />
+    basename:`/${process.env.PUBLIC_URL}`
   }
-])
+)
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
