@@ -95,13 +95,10 @@ function App() {
   useEffect(() => {
     const tableKeys : (keyof User)[] = ["name", "username", "email", "phone"];
     const tempArr : string[] = Array(tableKeys.length).fill("");
+    const params = new URLSearchParams(location.search);
 
     fetchDispatchData();  
-    
-
-    const params = new URLSearchParams(location.search);
-    const queryParams : {[key: string]: string} = {};
-
+  
     if (params.size === 0) {
       dispatch(initateTableKeys(tableKeys));
       dispatch(changeFilter(tempArr));
@@ -117,9 +114,6 @@ function App() {
       dispatch(initateTableKeys(keysArray));
       dispatch(changeFilter(filtersArray))
     }
-
-    
-
   }, []);
 
   return (
