@@ -23,8 +23,6 @@ function App() {
   const navigate = useNavigate();
   let location = useLocation()
 
-  //  "homepage": "https://github.com/EnjSadman.github.io/smartTestTask/",
-
   const userStorage = useSelector((state : RootState) => state.UserReducer);
   const usersArray = userStorage.users;
 
