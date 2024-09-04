@@ -6,25 +6,11 @@ import reportWebVitals from './reportWebVitals';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
 import {
-  createBrowserRouter,
+  Route,
+  BrowserRouter as Router,
   RouterProvider,
+  Routes,
 } from "react-router-dom";
-
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <App />
-    },
-    {
-      path: "/:query",
-      element: <App />
-    }
-  ],
-  {
-    basename:`/${process.env.PUBLIC_URL}`
-  }
-)
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -32,7 +18,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router}/>
+      <Router basename={`/${process.env.PUBLIC_URL}`}>
+        <Routes>
+          <Route path='/' element={<App />} />
+        </Routes>
+      </Router>
     </Provider>
   </React.StrictMode>
 );
