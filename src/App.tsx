@@ -15,9 +15,15 @@ import { changeDirection, changeField } from './store/SortSlice/SortSlice';
 import { orderArray } from './lib/OrderArray/OrderArray';
 import { objectStringifier } from './lib/ObjectStringifier/ObjectStringifier';
 import { initateTableKeys } from './store/TableKeysSlice/TableKeysSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  let location = useLocation()
+
+  //  "homepage": "https://github.com/EnjSadman.github.io/smartTestTask/",
 
   const userStorage = useSelector((state : RootState) => state.UserReducer);
   const usersArray = userStorage.users;
@@ -54,7 +60,7 @@ function App() {
 
     if (typeof value === "string" || typeof value === "number") {
       return (
-        <TableCell>
+        <TableCell key={uuidv4()}>
           {value}
         </TableCell>   
       )
@@ -62,7 +68,7 @@ function App() {
       const result = objectStringifier(value).split("\n")
 
       return(
-        <TableCell>
+        <TableCell key={uuidv4()}>
           {
             result.map((el, index) => (
               <div key={index}>
@@ -78,6 +84,9 @@ function App() {
 
   function filtratingFunction(element : User) {
     for (let i = 0; i < usedFields.length; i++) {
+      if (element[usedFields[i]] === undefined || element[usedFields[i]] === null) {
+        return
+      }
       if (!element[usedFields[i]].toString().includes(filtersStorage.filterValues[i])) {
         return 
       }
@@ -89,9 +98,30 @@ function App() {
     const tableKeys : (keyof User)[] = ["name", "username", "email", "phone"];
     const tempArr : string[] = Array(tableKeys.length).fill("");
 
-    fetchDispatchData();
-    dispatch(initateTableKeys(tableKeys));
-    dispatch(changeFilter(tempArr))
+    fetchDispatchData();  
+    
+
+    const params = new URLSearchParams(location.search);
+    const queryParams : {[key: string]: string} = {};
+
+    if (params.size === 0) {
+      dispatch(initateTableKeys(tableKeys));
+      dispatch(changeFilter(tempArr));
+    } else {
+      const keysArray : (keyof User)[] = [];
+      const filtersArray : string[] = [];
+      console.log(params);
+      params.forEach((value, key) => {
+        keysArray.push(key as keyof User);
+        filtersArray.push(value);
+      });
+
+      dispatch(initateTableKeys(keysArray));
+      dispatch(changeFilter(filtersArray))
+    }
+
+    
+
   }, []);
 
   return (
@@ -104,13 +134,24 @@ function App() {
               {
                usedFields.map((el, index)=> {
                  return (
-                   <TableCell>
+                   <TableCell key={index}>
                      <TextField
                        label={el}
+                       value={filtersStorage.filterValues[index]}
                        onChange={(event) => {
-                         const arrCopy = [...filtersStorage.filterValues];
-                         arrCopy[index] = event.target.value;
-                         dispatch(changeFilter(arrCopy))
+                        const arrCopy = [...filtersStorage.filterValues];
+                        let resultingPath = "";
+                        arrCopy[index] = event.target.value;
+                         
+                        usedFields.forEach((element, index)=> {
+                          if (index === 0) {
+                            resultingPath += `?&${element}=${arrCopy[index]}`
+                          } else {
+                            resultingPath += `&${element}=${arrCopy[index]}`
+                          }
+                        });
+                        navigate(`/${resultingPath}`, {relative: "path"})
+                        dispatch(changeFilter(arrCopy));
                        }}
                      />
                    </TableCell>
@@ -122,7 +163,7 @@ function App() {
               {
                 usedFields.map((el, index) => {
                   return(
-                    <TableCell>
+                    <TableCell key={index}>
                       <div
                         className='thead__item--wrapper'
                         onClick={() => {
@@ -150,7 +191,7 @@ function App() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {usersArray.length === 0 && <TableCell>No users here. Sorry!</TableCell>}    
+            {usersArray.length === 0 && <TableRow><TableCell>No users here. Sorry!</TableCell></TableRow>}    
             { orderedArray
             .filter(el=> filtratingFunction(el))
             .map(el => (
