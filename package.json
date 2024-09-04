@@ -1,7 +1,7 @@
 {
   "name": "smart",
   "version": "0.1.0",
-  "homepage": "https://github.com/EnjSadman.github.io/smartTestTask/",
+  "homepage": "http://EnjSadman.github.io/smartTestTask/",
   "private": true,
   "devDependencies": {
     "@emotion/react": "^11.13.3",

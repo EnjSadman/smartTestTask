@@ -8,7 +8,6 @@ import { Provider } from 'react-redux';
 import {
   Route,
   BrowserRouter as Router,
-  RouterProvider,
   Routes,
 } from "react-router-dom";
 

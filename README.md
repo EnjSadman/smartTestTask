@@ -2,7 +2,7 @@
 
 ## Made by Roman Pavlenko
 
-# [Demo Link]("https://github.com/EnjSadman.github.io/smartTestTask/")
+# [Demo Link](https://github.com/EnjSadman.github.io/smartTestTask/)
 
 ## To run locally
 
