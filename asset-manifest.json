@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/EnjSadman.github.io/smartTestTask/static/css/main.29a4d6b8.css",
+    "main.js": "/EnjSadman.github.io/smartTestTask/static/js/main.cc0fa3c0.js",
+    "static/js/453.566a4ee0.chunk.js": "/EnjSadman.github.io/smartTestTask/static/js/453.566a4ee0.chunk.js",
+    "index.html": "/EnjSadman.github.io/smartTestTask/index.html",
+    "main.29a4d6b8.css.map": "/EnjSadman.github.io/smartTestTask/static/css/main.29a4d6b8.css.map",
+    "main.cc0fa3c0.js.map": "/EnjSadman.github.io/smartTestTask/static/js/main.cc0fa3c0.js.map",
+    "453.566a4ee0.chunk.js.map": "/EnjSadman.github.io/smartTestTask/static/js/453.566a4ee0.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.29a4d6b8.css",
+    "static/js/main.cc0fa3c0.js"
+  ]
+}
