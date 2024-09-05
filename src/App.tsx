@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './store/store';
@@ -17,6 +17,7 @@ import { objectStringifier } from './lib/ObjectStringifier/ObjectStringifier';
 import { initateTableKeys } from './store/TableKeysSlice/TableKeysSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { convertLength } from '@mui/material/styles/cssUtils';
 
 function App() {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ function App() {
   }
 
   function singleCellContent (user : User, item : keyof User) {
-    const value = user[item]
+    const value = user[item];
 
     if (typeof value === "string" || typeof value === "number") {
       return (
@@ -63,14 +64,18 @@ function App() {
         </TableCell>   
       )
     } else if (typeof value === "object" && value !== null){
-      const result = objectStringifier(value).split("\n")
+      const result = objectStringifier(value).split("\n");
 
       return(
         <TableCell key={uuidv4()}>
           {
             result.map((el, index) => (
               <div key={index}>
-                {el}
+                {
+                (el) 
+                ? <>el</>
+                : <>something went wrong</>
+                }
               </div>
             )
             )
@@ -83,7 +88,7 @@ function App() {
   function filtratingFunction(element : User) {
     for (let i = 0; i < usedFields.length; i++) {
       if (element[usedFields[i]] === undefined || element[usedFields[i]] === null) {
-        return
+        return element
       }
       if (!element[usedFields[i]].toString().includes(filtersStorage.filterValues[i])) {
         return 
@@ -105,10 +110,13 @@ function App() {
     } else {
       const keysArray : (keyof User)[] = [];
       const filtersArray : string[] = [];
-      console.log(params);
+
       params.forEach((value, key) => {
-        keysArray.push(key as keyof User);
-        filtersArray.push(value);
+        console.log(process.env.REACT_APP_VALID_USER_KEYS)
+        if (process.env.REACT_APP_VALID_USER_KEYS?.includes(key as keyof User)) {
+          keysArray.push(key as keyof User);
+          filtersArray.push(value);
+        }
       });
 
       dispatch(initateTableKeys(keysArray));
